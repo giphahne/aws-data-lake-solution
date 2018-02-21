@@ -61,7 +61,7 @@ Resources:
         DependsOn: "DataLakeUserPool"
         Type: "AWS::CloudFormation::Stack"
         Properties:
-            TemplateURL: !Join ["/", ["https://s3.amazonaws.com", !Join ["-", [!FindInMap ["SourceCode", "General", "S3Bucket"], Ref: "AWS::Region"]] , !FindInMap ["SourceCode", "General", "KeyPrefix"], "data-lake-services.yaml"]]
+            TemplateURL: !Join ["/", ["https://s3.amazonaws.com", !FindInMap ["SourceCode", "General", "S3Bucket"], !FindInMap ["SourceCode", "General", "KeyPrefix"], "data-lake-services.yaml"]]
             Parameters:
                 UserPoolId: !GetAtt DataLakeUserPool.UserPoolId
                 SourceS3Bucket: !Join ["-", [!FindInMap ["SourceCode", "General", "S3Bucket"], Ref: "AWS::Region"]]
@@ -70,7 +70,7 @@ Resources:
     DataLakeStorageStack:
         Type: "AWS::CloudFormation::Stack"
         Properties:
-            TemplateURL: !Join ["/", ["https://s3.amazonaws.com", !Join ["-", [!FindInMap ["SourceCode", "General", "S3Bucket"], Ref: "AWS::Region"]], !FindInMap ["SourceCode", "General", "KeyPrefix"], "data-lake-storage.yaml"]]
+            TemplateURL: !Join ["/", ["https://s3.amazonaws.com", !FindInMap ["SourceCode", "General", "S3Bucket"], !FindInMap ["SourceCode", "General", "KeyPrefix"], "data-lake-storage.yaml"]]
             Parameters:
                 ESAccessIpAddress: !Ref AccessIpAddress
 
@@ -79,7 +79,7 @@ Resources:
         DependsOn: "DataLakeServicesStack"
         Type: "AWS::CloudFormation::Stack"
         Properties:
-            TemplateURL: !Join ["/", ["https://s3.amazonaws.com", !Join ["-", [!FindInMap ["SourceCode", "General", "S3Bucket"], Ref: "AWS::Region"]], !FindInMap ["SourceCode", "General", "KeyPrefix"], "data-lake-api.yaml"]]
+            TemplateURL: !Join ["/", ["https://s3.amazonaws.com", !FindInMap ["SourceCode", "General", "S3Bucket"], !FindInMap ["SourceCode", "General", "KeyPrefix"], "data-lake-api.yaml"]]
             Parameters:
                 AuthorizerArn: !GetAtt DataLakeServicesStack.Outputs.AuthorizerArn
                 AdminArn: !GetAtt DataLakeServicesStack.Outputs.AdminArn
