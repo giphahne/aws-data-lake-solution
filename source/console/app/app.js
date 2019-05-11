@@ -1,5 +1,5 @@
 /*********************************************************************************************************************
- *  Copyright 2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.                                           *
+ *  Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.                                           *
  *                                                                                                                    *
  *  Licensed under the Amazon Software License (the "License"). You may not use this file except in compliance        *
  *  with the License. A copy of the License is located at                                                             *
@@ -34,8 +34,11 @@ angular.module('dataLake', [
     'dataLake.profile',
     'dataLake.profile.changepassword',
     'dataLake.admin.invitation',
+    'dataLake.admin.groups',
     'dataLake.admin.users',
     'dataLake.admin.settings',
+    'dataLake.admin.group.create',
+    'dataLake.admin.group',
     'dataLake.admin.user',
     'dataLake.version',
     'dataLake.goclick.goClick-directive',
@@ -50,7 +53,7 @@ angular.module('dataLake', [
 
 .config(function($stateProvider, $urlRouterProvider) {
 
-    $urlRouterProvider.otherwise('/signin');
+    $urlRouterProvider.otherwise('/dashboard');
 })
 
 .run(function($rootScope, $state, authService) {
@@ -58,27 +61,36 @@ angular.module('dataLake', [
         if (toState.authenticate) {
             authService.isAuthenticated().then(function(authenticated) {
                 if (!authenticated) {
-                    // User isn’t authenticated
                     $state.transitionTo('signin');
-                    event.preventDefault();
+                } else if (FEDERATED_LOGIN && !toState.activeWithFederation) {
+                    $state.transitionTo('dashboard');
                 }
+                event.preventDefault();
+
             }).catch(function(result) {
                 // User isn’t authenticated
                 $state.transitionTo('signin');
                 event.preventDefault();
             });
+
         } else if (toState.adminAuthenticate) {
             authService.isAdminAuthenticated().then(function(authenticated) {
                 if (!authenticated) {
-                    // User isn’t authorized to access admin
                     $state.transitionTo('signin');
-                    event.preventDefault();
+                } else if (FEDERATED_LOGIN && !toState.activeWithFederation) {
+                    $state.transitionTo('dashboard');
                 }
+                event.preventDefault();
+
             }).catch(function(result) {
-                // User isn’t authenticated
+                // Admin isn’t authenticated
                 $state.transitionTo('signin');
                 event.preventDefault();
             });
+
+        } else if (FEDERATED_LOGIN && !toState.activeWithFederation) {
+            $state.transitionTo('signin');
+            event.preventDefault();
         }
     });
 });

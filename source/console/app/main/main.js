@@ -1,5 +1,5 @@
 /*********************************************************************************************************************
- *  Copyright 2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.                                           *
+ *  Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.                                           *
  *                                                                                                                    *
  *  Licensed under the Amazon Software License (the "License"). You may not use this file except in compliance        *
  *  with the License. A copy of the License is located at                                                             *
@@ -24,15 +24,19 @@ angular.module('dataLake.main', ['dataLake.factory.cart'])
     $scope.username = '';
     $scope.cartCount = 0;
     $scope.showadmin = false;
+    $scope.showUsers = false;
+    $scope.showGroups = false;
 
     authService.getUserInfo().then(function(result) {
         $rootScope.username = result.display_name;
         $scope.username = $rootScope.username;
-        if (result.role !== 'Admin') {
+        if (result.role.toLowerCase() !== 'admin') {
             var myEl = angular.element(document.querySelector('#adminMenu'));
             myEl.empty();
         } else {
             $scope.showadmin = true;
+            $scope.showUsers = true;
+            $scope.showGroups = !FEDERATED_LOGIN;
         }
     }, function(msg) {
         console.log('Unable to retrieve the user session.');

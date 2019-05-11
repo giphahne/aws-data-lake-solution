@@ -1,5 +1,5 @@
 /*********************************************************************************************************************
- *  Copyright 2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.                                           *
+ *  Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.                                           *
  *                                                                                                                    *
  *  Licensed under the Amazon Software License (the "License"). You may not use this file except in compliance        *
  *  with the License. A copy of the License is located at                                                             *
@@ -41,6 +41,9 @@ angular.module('dataLake.utils', [])
     return {
         set: function(key, value) {
             $window.localStorage[key] = value;
+        },
+        remove: function(key) {
+            $window.localStorage.removeItem(key);
         },
         get: function(key, defaultValue) {
             return $window.localStorage[key] || defaultValue;

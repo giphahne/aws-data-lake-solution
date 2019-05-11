@@ -1,5 +1,5 @@
 /*********************************************************************************************************************
- *  Copyright 2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.                                           *
+ *  Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.                                           *
  *                                                                                                                    *
  *  Licensed under the Amazon Software License (the "License"). You may not use this file except in compliance        *
  *  with the License. A copy of the License is located at                                                             *
@@ -27,22 +27,29 @@ angular.module('dataLake.forgot', [])
                 templateUrl: 'forgot/forgot.html',
                 controller: 'ForgotCtrl'
             }
-        }
+        },
+        activeWithFederation: false
     });
 }])
 
 .controller('ForgotCtrl', function($scope, $state, authService) {
 
+    $scope.message = '';
     $scope.errormessage = '';
     $scope.showVerification = false;
     $scope.user = {};
 
     $scope.forgotPassword = function(user, isValid) {
+        $scope.message = '';
+        $scope.errormessage = '';
         if (isValid) {
-
-            authService.forgot(user).then(function() {
-                $scope.showVerification = true;
-                $scope.user.email = user.email;
+            authService.forgot(user).then(function(code) {
+                if (code === 'INVITE_RESENT') {
+                    $scope.message = 'Invite resent. Please check your email inbox.';
+                } else {
+                    $scope.showVerification = true;
+                    $scope.user.email = user.email;
+                }
             }, function(msg) {
                 $scope.errormessage = 'An unexpected error has occurred. Please try again.';
                 return;
@@ -54,8 +61,9 @@ angular.module('dataLake.forgot', [])
     };
 
     $scope.changePassword = function(user, isValid) {
+        $scope.message = '';
+        $scope.errormessage = '';
         if (isValid) {
-
             authService.resetPassword(user).then(function() {
                 $state.go('signin', {});
             }, function(msg) {

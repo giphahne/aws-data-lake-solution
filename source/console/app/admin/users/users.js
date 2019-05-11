@@ -1,5 +1,5 @@
 /*********************************************************************************************************************
- *  Copyright 2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.                                           *
+ *  Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.                                           *
  *                                                                                                                    *
  *  Licensed under the Amazon Software License (the "License"). You may not use this file except in compliance        *
  *  with the License. A copy of the License is located at                                                             *
@@ -33,14 +33,20 @@ angular.module('dataLake.admin.users', ['dataLake.main', 'dataLake.utils', 'data
                 controller: 'AdminUsersCtrl'
             }
         },
-        adminAuthenticate: true
+        adminAuthenticate: true,
+        activeWithFederation: true
     });
 }])
+
+.filter('encodeURIComponent', function($window) {
+    return $window.encodeURIComponent;
+})
 
 .controller('AdminUsersCtrl', function($scope, $state, $blockUI, adminUserFactory) {
 
     $scope.results = [];
     $scope.showerror = false;
+    $scope.federatedLogin = FEDERATED_LOGIN;
 
     var getUsers = function() {
         $blockUI.start();

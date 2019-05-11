@@ -1,5 +1,5 @@
 /*********************************************************************************************************************
- *  Copyright 2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.                                           *
+ *  Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.                                           *
  *                                                                                                                    *
  *  Licensed under the Amazon Software License (the "License"). You may not use this file except in compliance        *
  *  with the License. A copy of the License is located at                                                             *
@@ -27,14 +27,29 @@ angular.module('dataLake.signin', ['dataLake.utils'])
                 templateUrl: 'signin/signin.html',
                 controller: 'SigninCtrl'
             }
-        }
+        },
+        activeWithFederation: false
     });
 }])
 
-.controller('SigninCtrl', function($scope, $state, authService, $blockUI) {
+.controller('SigninCtrl', function($scope, $state, authService, $blockUI, $window) {
 
+    $scope.showLoginForm = true;
     $scope.errormessage = '';
     $blockUI.stop();
+
+    if (FEDERATED_LOGIN) {
+        $scope.showLoginForm = false;
+        authService.signin().then(function(resp) {
+            if (resp) {
+                $state.go('dashboard', {});
+            } else {
+                $window.open(LOGIN_URL, '_self');
+            }
+        }, function(msg) {
+            $window.open(LOGIN_URL, '_self');
+        });
+    }
 
     $scope.signin = function(user, isValid) {
 
@@ -56,7 +71,6 @@ angular.module('dataLake.signin', ['dataLake.utils'])
 
                 return;
             });
-
         } else {
             $scope.errormessage = 'There are still invalid fields.';
         }
